@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Injection Training Site</title>
+    <style>
+        /* Общие стили */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f0f0;
+            color: #333;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .console {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 10px;
+            font-family: monospace;
+            font-size: 14px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #e9ecef;
+            transition: background-color 0.3s;
+        }
+        .output {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            min-height: 60px;
+            margin-bottom: 20px;
+            transition: background-color 0.3s;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .theme-toggle, .language-toggle {
+            cursor: pointer;
+            margin-left: 10px;
+            padding: 8px;
+            border-radius: 5px;
+            border: none;
+            background-color: #007bff;
+            color: #fff;
+            transition: background-color 0.3s;
+        }
+        .theme-toggle:hover, .language-toggle:hover {
+            background-color: #0056b3;
+        }
+        .footer {
+            margin-top: 40px;
+            padding: 20px;
+            border-top: 1px solid #ddd;
+            background-color: #f8f9fa;
+            text-align: center;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .footer a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        .accordion-button {
+            width: 100%;
+            text-align: left;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            transition: background-color 0.3s;
+        }
+        .accordion-button:hover {
+            background-color: #0056b3;
+        }
+        .accordion-content {
+            display: none;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            transition: background-color 0.3s;
+        }
+
+        /* Тёмная тема */
+        .dark-mode {
+            background-color: #333;
+            color: #f0f0f0;
+        }
+        .dark-mode .container {
+            background-color: #444;
+        }
+        .dark-mode .console {
+            background-color: #555;
+            border-color: #666;
+        }
+        .dark-mode .output {
+            background-color: #555;
+            border-color: #666;
+        }
+        .dark-mode .footer {
+            background-color: #555;
+            color: #f0f0f0;
+        }
+        .dark-mode .accordion-button {
+            background-color: #555;
+            border-color: #666;
+            color: #f0f0f0;
+        }
+        .dark-mode .accordion-button:hover {
+            background-color: #666;
+        }
+        .dark-mode .accordion-content {
+            background-color: #666;
+            border-color: #777;
+        }
+        .dark-mode .accordion-content p {
+            color: #f0f0f0;
+        }
+    </style>
+</head>
+<body onload="initializePage()">
+
+<div class="header">
+    <h1 id="main-title">SQL Injection Training Site</h1>
+    <div>
+        <button class="language-toggle" onclick="toggleLanguage()">Русский</button>
+        <button class="theme-toggle" onclick="toggleTheme()">Dark Mode</button>
+    </div>
+</div>
+
+<div class="container">
+    <div class="buttons">
+        <button onclick="executeCommand(`' OR '1'='1`);">Try: ' OR '1'='1</button>
+        <button onclick="executeCommand(`' UNION SELECT null, null -- `);">Try: UNION SELECT</button>
+        <button onclick="executeCommand(`' OR 1=1 -- `);">Try: OR 1=1 --</button>
+        <button onclick="executeCommand(`' AND 1=1 -- `);">Try: AND 1=1 --</button>
+        <button onclick="executeCommand(`' DROP TABLE users -- `);">Try: DROP TABLE users</button>
+        <button onclick="clearOutput();">Clear Output</button>
+    </div>
+
+    <textarea id="commandInput" class="console" placeholder="Write your SQL command here..."></textarea>
+    <button onclick="executeCustomCommand();">Execute Command</button>
+
+    <h3 id="output-title">Output:</h3>
+    <div id="output" class="output"></div>
+
+    <!-- Развёртка с объяснениями -->
+    <div class="accordion" id="explanation-accordion">
+        <div class="accordion-item">
+            <button class="accordion-button" onclick="toggleAccordion(this)">Explain: ' OR '1'='1</button>
+            <div class="accordion-content">
+                <p class="en">This command bypasses authentication by always evaluating to true, which allows unauthorized access.</p>
+                <p class="ru">Эта команда обходит авторизацию, так как всегда возвращает истину, что позволяет несанкционированный доступ.</p>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <button class="accordion-button" onclick="toggleAccordion(this)">Explain: ' UNION SELECT null, null --</button>
+            <div class="accordion-content">
+                <p class="en">This command attempts to merge results from multiple tables, potentially revealing hidden data.</p>
+                <p class="ru">Эта команда пытается объединить результаты из нескольких таблиц, возможно раскрывая скрытые данные.</p>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <button class="accordion-button" onclick="toggleAccordion(this)">Explain: ' OR 1=1 --</button>
+            <div class="accordion-content">
+                <p class="en">Similar to the first command, it forces the condition to always be true, bypassing security checks.</p>
+                <p class="ru">Похоже на первую команду, заставляет условие всегда быть истинным, обходя проверки безопасности.</p>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <button class="accordion-button" onclick="toggleAccordion(this)">Explain: ' AND 1=1 --</button>
+            <div class="accordion-content">
+                <p class="en">This command checks a condition that is always true but is often used to understand query behavior.</p>
+                <p class="ru">Эта команда проверяет условие, которое всегда истинно, но часто используется для изучения поведения запроса.</p>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <button class="accordion-button" onclick="toggleAccordion(this)">Explain: ' DROP TABLE users --</button>
+            <div class="accordion-content">
+                <p class="en">A highly dangerous command that, if executed, would delete the entire users table, causing data loss.</p>
+                <p class="ru">Чрезвычайно опасная команда, которая, если будет выполнена, удалит всю таблицу пользователей, что приведет к потере данных.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="footer">
+    <p id="about-site"><strong>About this site:</strong> This is a training site for learning about SQL injection vulnerabilities.</p>
+    <p id="developer"><strong>Developer:</strong> [by SCODY]</p>
+    <p id="version"><strong>Version:</strong> 0.0.4</p>
+    <p>
+        <a href="https://github.com/Scody0/SQL-Injection-Training-Site" target="_blank">GitHub</a> | 
+        <a href="https://www.youtube.com/@scody_org" target="_blank">YouTube</a> | 
+        <a href="https://t.me/scody_org" target="_blank">Telegram</a>
+    </p>
+</div>
+
+<script>
+    let currentLanguage = 'en'; // Текущий язык
+    let isDarkMode = false;     // Состояние темы
+
+    // Функция инициализации страницы
+    function initializePage() {
+        document.querySelectorAll('.accordion-content p').forEach(p => {
+            if (p.classList.contains(currentLanguage)) {
+                p.style.display = 'block';
+            } else {
+                p.style.display = 'none';
+            }
+        });
+        updateFooterLanguage();
+    }
+
+    // Функция переключения языка
+    function toggleLanguage() {
+        const languageToggle = document.querySelector('.language-toggle');
+        const mainTitle = document.getElementById('main-title');
+        const outputTitle = document.getElementById('output-title');
+
+        if (currentLanguage === 'en') {
+            currentLanguage = 'ru';
+            languageToggle.textContent = 'English';
+            mainTitle.textContent = 'Учебный сайт по SQL-инъекциям';
+            outputTitle.textContent = 'Вывод:';
+        } else {
+            currentLanguage = 'en';
+            languageToggle.textContent = 'Русский';
+            mainTitle.textContent = 'SQL Injection Training Site';
+            outputTitle.textContent = 'Output:';
+        }
+
+        document.querySelectorAll('.accordion-content p').forEach(p => {
+            p.style.display = p.classList.contains(currentLanguage) ? 'block' : 'none';
+        });
+
+        updateFooterLanguage();
+    }
+
+    // Обновление перевода футера
+    function updateFooterLanguage() {
+        const aboutSite = document.getElementById('about-site');
+        const developer = document.getElementById('developer');
+        const version = document.getElementById('version');
+
+        if (currentLanguage === 'ru') {
+            aboutSite.innerHTML = '<strong>О сайте:</strong> Это учебный сайт для изучения уязвимостей SQL-инъекций.';
+            developer.innerHTML = '<strong>Разработчик:</strong> [by SCODY]';
+            version.innerHTML = '<strong>Версия:</strong> 0.0.4';
+        } else {
+            aboutSite.innerHTML = '<strong>About this site:</strong> This is a training site for learning about SQL injection vulnerabilities.';
+            developer.innerHTML = '<strong>Developer:</strong> [by SCODY]';
+            version.innerHTML = '<strong>Version:</strong> 0.0.4';
+        }
+    }
+
+    // Функция переключения темы
+    function toggleTheme() {
+        document.body.classList.toggle('dark-mode');
+        const themeToggle = document.querySelector('.theme-toggle');
+        isDarkMode = !isDarkMode;
+        themeToggle.textContent = isDarkMode ? 'Light Mode' : 'Dark Mode';
+    }
+
+    // Функция для выполнения предустановленных команд
+    function executeCommand(command) {
+        const output = document.getElementById('output');
+        output.innerHTML += `<p><strong>Command Executed:</strong> ${command}</p>`;
+
+        let explanation = '';
+        switch (command) {
+            case `' OR '1'='1`:
+                explanation = "Bypasses authentication by always returning true.";
+                break;
+            case `' UNION SELECT null, null -- `:
+                explanation = "Attempts to retrieve additional data by merging results.";
+                break;
+            case `' OR 1=1 -- `:
+                explanation = "Another form of bypassing authentication.";
+                break;
+            case `' AND 1=1 -- `:
+                explanation = "Checks a true condition, usually harmless.";
+                break;
+            case `' DROP TABLE users -- `:
+                explanation = "Dangerous command that would delete the users table!";
+                break;
+            default:
+                explanation = "Command executed without detailed explanation.";
+        }
+
+        output.innerHTML += `<p><strong>Explanation:</strong> ${explanation}</p>`;
+    }
+
+    // Функция для выполнения пользовательских команд
+    function executeCustomCommand() {
+        const commandInput = document.getElementById('commandInput').value;
+        if (commandInput.trim() === '') {
+            alert('Please enter a command.');
+            return;
+        }
+        executeCommand(commandInput);
+    }
+
+    // Очистка вывода
+    function clearOutput() {
+        document.getElementById('output').innerHTML = '';
+    }
+
+    // Функция для аккордеона
+    function toggleAccordion(button) {
+        const content = button.nextElementSibling;
+        content.style.display = content.style.display === 'block' ? 'none' : 'block';
+    }
+</script>
+
+</body>
+</html>
