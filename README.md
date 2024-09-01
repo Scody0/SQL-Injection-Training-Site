@@ -25,13 +25,13 @@
 1. **Clone the repository:**
 
     ```bash
-    git clone https://github.com/your-username/sql-injection-training-site.git
+    git clone https://github.com/Scody0/SQL-Injection-Training-Site.git
     ```
 
 2. **Navigate to the project directory:**
 
     ```bash
-    cd sql-injection-training-site
+    cd SQL-Injection-Training-Site
     ```
 
 3. **Run the site using a simple HTTP server (e.g., with Python):**
@@ -121,13 +121,13 @@ _This project is created for educational purposes and aims to improve the securi
 1. **Склонируйте репозиторий:**
 
     ```bash
-    git clone https://github.com/your-username/sql-injection-training-site.git
+    git clone https://github.com/Scody0/SQL-Injection-Training-Site.git
     ```
 
 2. **Перейдите в директорию проекта:**
 
     ```bash
-    cd sql-injection-training-site
+    cd SQL-Injection-Training-Site
     ```
 
 3. **Запустите сайт с помощью простого HTTP-сервера (например, с использованием Python):**
